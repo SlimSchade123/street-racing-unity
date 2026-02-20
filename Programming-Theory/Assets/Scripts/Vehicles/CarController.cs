@@ -47,7 +47,7 @@ public abstract class CarController : MonoBehaviour {
 
 	protected float CurrentSpeed { // ENCAPSULATION
 		get {
-			float speed = _rigidbody.velocity.magnitude;
+			float speed = _rigidbody.linearVelocity.magnitude;
 			if (_speedUnit == SpeedUnit.Imperial)
 				speed *= 2.23693629f;
 			else
@@ -234,19 +234,19 @@ public abstract class CarController : MonoBehaviour {
 
 	private void StickToGround(Wheel wheel) { // ABSTRACTION
 		wheel.collider.attachedRigidbody.AddForce(
-			-transform.up * _downForce * wheel.collider.attachedRigidbody.velocity.magnitude
+			-transform.up * _downForce * wheel.collider.attachedRigidbody.linearVelocity.magnitude
 		);
 	}
 
 	private void HandleSpeed() { // ABSTRACTION
-		float speed = _rigidbody.velocity.magnitude;
+		float speed = _rigidbody.linearVelocity.magnitude;
 		if (_speedUnit == SpeedUnit.Imperial) {
 			if (speed > _topSpeed)
-				_rigidbody.velocity = (_topSpeed / 2.23693629f) * _rigidbody.velocity.normalized;
+				_rigidbody.linearVelocity = (_topSpeed / 2.23693629f) * _rigidbody.linearVelocity.normalized;
 		} else {
 			speed *= 3.6f;
 			if (speed > _topSpeed)
-				_rigidbody.velocity = (_topSpeed / 3.6f) * _rigidbody.velocity.normalized;
+				_rigidbody.linearVelocity = (_topSpeed / 3.6f) * _rigidbody.linearVelocity.normalized;
 		}
 	}
 

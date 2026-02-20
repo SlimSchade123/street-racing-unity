@@ -50,7 +50,7 @@ public class PauseMenu : MonoBehaviour {
 			0f
 		);
 
-		GameManager.Instance.player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+		GameManager.Instance.player.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 		GameManager.Instance.player.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 	}
 
