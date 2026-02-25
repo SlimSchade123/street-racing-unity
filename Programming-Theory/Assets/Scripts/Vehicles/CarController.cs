@@ -60,6 +60,10 @@ public abstract class CarController : MonoBehaviour {
 	private TMP_Text _speedUnitText;
 	private Transform _speedometerPointer;
 
+	//Speed boost variables
+	private bool _isSpeedBoost = false;
+	private float _speedBoostAmount = 1;
+
 	protected void InitiateVehicle(Transform vehicle) { // ABSTRACTION
 		if (_centerOfMass != null && _rigidbody != null)
 			_rigidbody.centerOfMass = _centerOfMass.localPosition;
@@ -248,11 +252,38 @@ public abstract class CarController : MonoBehaviour {
 			if (speed > _topSpeed)
 				_rigidbody.linearVelocity = (_topSpeed / 3.6f) * _rigidbody.linearVelocity.normalized;
 		}
+
+		if(_isSpeedBoost)
+		{
+            _rigidbody.linearVelocity *= _speedBoostAmount;
+
+        }
 	}
 
 	private void Awake() {
 		_speedText = GameObject.Find("Speed Text").GetComponent<TMP_Text>();
 		_speedUnitText = GameObject.Find("Speed Unit Text").GetComponent<TMP_Text>();
 		_speedometerPointer = GameObject.Find("Speedometer Pointer").transform;
+	}
+
+
+	public void BoostSpeed(float increase, float duration)
+	{
+		print("Boosting Speed");
+
+
+        //This is the speed: _rigidbody.linearVelocity.magnitude
+
+        //MotorTorqueDirection - if this is greater than 0, the car (allegedly) accelerates. if it is less than 0, the car (allegedly) decelerates
+
+        _speedBoostAmount = increase;
+		_isSpeedBoost = true;
+
+		//Set something (such as a coroutine) to wait for the duration and then set _speedBoostAmount back to 1
+    }
+
+    public void BoostHandling(float increase, float duration)
+	{
+		print("Boosting Handling");
 	}
 }
