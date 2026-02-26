@@ -253,6 +253,7 @@ public abstract class CarController : MonoBehaviour {
 				_rigidbody.linearVelocity = (_topSpeed / 3.6f) * _rigidbody.linearVelocity.normalized;
 		}
 
+		//Increases speed by speedBoostAmount if Speed Boost is currently active
 		if(_isSpeedBoost)
 		{
             _rigidbody.linearVelocity *= _speedBoostAmount;
@@ -266,24 +267,45 @@ public abstract class CarController : MonoBehaviour {
 		_speedometerPointer = GameObject.Find("Speedometer Pointer").transform;
 	}
 
-
-	public void BoostSpeed(float increase, float duration)
+	//Boosts the speed of the car by a specified increase for a specified amount of time
+	public void BoostSpeedForTime(float increase, float duration)
 	{
-		print("Boosting Speed");
-
-
-        //This is the speed: _rigidbody.linearVelocity.magnitude
-
-        //MotorTorqueDirection - if this is greater than 0, the car (allegedly) accelerates. if it is less than 0, the car (allegedly) decelerates
 
         _speedBoostAmount = increase;
 		_isSpeedBoost = true;
 
-		//Set something (such as a coroutine) to wait for the duration and then set _speedBoostAmount back to 1
+		StartCoroutine(EndSpeedBoostAfterTime(duration));
     }
+
+	//Starts a speed boost but does not end it
+	public void StartSpeedBoost(float increase)
+	{
+        _speedBoostAmount = increase;
+        _isSpeedBoost = true;
+    }
+
+	//Ends a speed boost
+	public void EndSpeedBoost()
+	{
+		_speedBoostAmount = 1;
+		_isSpeedBoost = false;
+	}
 
     public void BoostHandling(float increase, float duration)
 	{
 		print("Boosting Handling");
+	}
+
+	//Ends speed boost after a specified amount of time
+	private IEnumerator EndSpeedBoostAfterTime(float time)
+	{
+		yield return new WaitForSeconds(time);
+
+		_speedBoostAmount = 0.5f;	//An attempt to make things a little easier to control
+
+		yield return new WaitForEndOfFrame();
+
+		_speedBoostAmount = 1;	//Return speed boost modifier to normal
+		_isSpeedBoost = false;	//Inform car it is no longer under the effects of a speed boost
 	}
 }
