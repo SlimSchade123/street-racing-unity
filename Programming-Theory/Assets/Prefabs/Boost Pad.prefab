@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdf000c4c60582f4b88cdadd4ced3b6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoostPad
-  speedBoost: 1.05
+  speedBoostModifier: 1
 --- !u!33 &472711837859490118
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -81,7 +81,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 55a405df0c95d054396f4b326cf84250, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

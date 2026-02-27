@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent (typeof(SphereCollider))]
+[RequireComponent (typeof(BoxCollider))]
 public class ItemPickup : MonoBehaviour
 {
     [Tooltip("Respawns pickup after specified amount of time. (To not despawn: set to 0), (To not respawn, set to a negative number)")]
