@@ -44,6 +44,7 @@ public abstract class CarController : MonoBehaviour {
 	[SerializeField] private float _downForce = 100f;
 	[SerializeField] private SpeedUnit _speedUnit;
 	[SerializeField] private float _topSpeed = 140;
+	[SerializeField] public Transform _firstPersonCameraPosition;
 
 	protected float CurrentSpeed { // ENCAPSULATION
 		get {

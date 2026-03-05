@@ -25,6 +25,9 @@ public class PlayerCamera : MonoBehaviour {
 	private bool canFollow = false;
 	private bool canSwap = true;
 
+	private Transform _firstPersonPosition;
+	private CameraMode _previousMode = CameraMode.THIRDPERSONBEHIND;
+
 	public static void ChangeCamPrefs(Transform vehicle, float dist, float height) { // ABSTRACTION
 		Target = vehicle;
 		Distance = dist;
@@ -40,7 +43,7 @@ public class PlayerCamera : MonoBehaviour {
 	private void FixedUpdate() {
 		if(canSwap)
 		{
-			if(Input.GetKey(KeyCode.LeftShift))
+			if(Input.GetKey(KeyCode.Q))
 			{
 				switch (CameraMode)
 				{
@@ -59,6 +62,40 @@ public class PlayerCamera : MonoBehaviour {
 					default:
 						break;
 				}
+
+				print(Target.gameObject);
+			}
+
+
+			if(Input.GetKey(KeyCode.LeftControl))
+			{
+				switch (CameraMode)
+				{
+					case CameraMode.FIRSTPERSONCAMERA:
+						CameraMode = _previousMode;
+						StartCoroutine(CameraSwapCooldown());
+						break;
+					case CameraMode.THIRDPERSONBEHIND:
+                        if (_firstPersonPosition == null)
+                        {
+                            _firstPersonPosition = Target.gameObject.GetComponent<CarController>()._firstPersonCameraPosition;
+                        }
+						_previousMode = CameraMode;
+						CameraMode = CameraMode.FIRSTPERSONCAMERA;
+						StartCoroutine(CameraSwapCooldown());
+                        break;
+					case CameraMode.THIRDPERSONINFRONT:
+                        if (_firstPersonPosition == null)
+                        {
+                            _firstPersonPosition = Target.gameObject.GetComponent<CarController>()._firstPersonCameraPosition;
+                        }
+						_previousMode = CameraMode;
+						CameraMode = CameraMode.FIRSTPERSONCAMERA;
+						StartCoroutine(CameraSwapCooldown());
+                        break;
+					default:
+						break;
+				}
 			}
 		}
 
@@ -68,7 +105,15 @@ public class PlayerCamera : MonoBehaviour {
 			switch (CameraMode)
 			{
 				case CameraMode.FIRSTPERSONCAMERA:
-					break;
+                    transform.position = Vector3.Lerp(transform.position, _firstPersonPosition.localToWorldMatrix.GetPosition(), 1);// Time.deltaTime * _damping);
+
+                    if (_smoothRotation)
+                    {
+                        //Quaternion wantedRotation = Quaternion.LookRotation(Target.position - transform.position, Target.up);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, _firstPersonPosition.localToWorldMatrix.rotation, Time.deltaTime * _rotationDamping);
+                    }
+                    else transform.LookAt(Target, Target.up);
+                    break;
 				case CameraMode.THIRDPERSONBEHIND:
 					if (_followBehind)
 						wantedPosition = Target.TransformPoint(0, Height, -Distance);
