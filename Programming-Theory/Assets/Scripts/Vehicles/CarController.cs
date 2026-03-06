@@ -65,6 +65,10 @@ public abstract class CarController : MonoBehaviour {
 	private bool _isSpeedBoost = false;
 	private float _speedBoostAmount = 1;
 
+	//Tracking placement
+	public int _checkpointsHit = 0;
+	public int _currentPlacement = 0;
+
 	protected void InitiateVehicle(Transform vehicle) { // ABSTRACTION
 		if (_centerOfMass != null && _rigidbody != null)
 			_rigidbody.centerOfMass = _centerOfMass.localPosition;
@@ -308,5 +312,24 @@ public abstract class CarController : MonoBehaviour {
 
 		_speedBoostAmount = 1;	//Return speed boost modifier to normal
 		_isSpeedBoost = false;	//Inform car it is no longer under the effects of a speed boost
+	}
+
+	//Registers when a car has passed through a new checkpoint
+	public void RegisterClearedCheckpoint()
+	{
+		_checkpointsHit++;
+	}
+
+	public void CalculatePlacement(CarController[] allCars)
+	{
+		int placementScore = 1;
+
+		foreach(CarController car in allCars)
+		{
+			if(car._checkpointsHit > this._checkpointsHit) placementScore++;
+		}
+
+
+		_currentPlacement = placementScore;
 	}
 }

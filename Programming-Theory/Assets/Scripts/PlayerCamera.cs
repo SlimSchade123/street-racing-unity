@@ -45,7 +45,7 @@ public class PlayerCamera : MonoBehaviour {
 		{
 			if(Input.GetKey(KeyCode.Q))
 			{
-				switch (CameraMode)
+                switch (CameraMode)
 				{
 					case CameraMode.FIRSTPERSONCAMERA:
 						break;

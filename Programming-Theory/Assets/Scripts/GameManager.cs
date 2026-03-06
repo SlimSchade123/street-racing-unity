@@ -21,6 +21,12 @@ public class GameManager : MonoBehaviour {
 	public GameObject player;
 	public HighscoreData highscoreData = new HighscoreData();
 
+	public CarController[] allCars = null;
+	public ConvertibleController convertible = null;
+	public PickupController pickup = null;
+	public JumpyController jumpy = null;
+	public SharkController shark = null;
+
 	private void Awake() {
 		if (Instance != null) {
 			Destroy(gameObject);
@@ -31,7 +37,17 @@ public class GameManager : MonoBehaviour {
 		DontDestroyOnLoad(gameObject);
 	}
 
-	public bool IsSelectedVehicle(Cars cRef) { // ABSTRACTION
+    private void Start()
+    {
+		allCars = FindObjectsByType<CarController>(FindObjectsSortMode.None);
+		convertible = FindFirstObjectByType<ConvertibleController>();
+		pickup = FindFirstObjectByType<PickupController>();
+		jumpy = FindFirstObjectByType<JumpyController>();
+		shark = FindFirstObjectByType<SharkController>();
+    }
+
+
+    public bool IsSelectedVehicle(Cars cRef) { // ABSTRACTION
 		if (cRef == choosenCarType) return true;
 		else return false;
 	}
@@ -74,5 +90,45 @@ public class GameManager : MonoBehaviour {
 		}
 
 		highscoreData = data;
+	}
+
+	public int CalculatePlacement()
+	{
+		if(allCars == null || allCars.Length == 0) allCars = FindObjectsByType<CarController>(FindObjectsSortMode.None);
+
+        foreach (CarController car in allCars)
+		{
+			car.CalculatePlacement(allCars);
+		}
+
+		int placement = 0;
+
+		switch (choosenCarType)
+		{
+			case Cars.Convertible:
+				if(convertible == null) convertible = FindFirstObjectByType<ConvertibleController>();
+
+                placement = convertible._currentPlacement;
+				break;
+			case Cars.Pickup:
+                if(pickup == null) pickup = FindFirstObjectByType<PickupController>();
+
+				placement = pickup._currentPlacement;
+                break;
+			case Cars.Jumpy:
+				if(jumpy == null)
+                jumpy = FindFirstObjectByType<JumpyController>();
+
+				placement = jumpy._currentPlacement;
+				break;
+			case Cars.SharkTruck:
+				if(shark == null) shark = FindFirstObjectByType<SharkController>();
+				placement = shark._currentPlacement;
+				break;
+			default:
+				break;
+		}
+
+        return placement;
 	}
 }

@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Text;
 
 public class UIManager : MonoBehaviour {
 	public float timer = 3f;
 
 	private bool _canCount = false;
 	private TMP_Text _startCounter;
+	[SerializeField] private TMP_Text _placementDisplay;
 	private GameObject _controls;
 
 	public static void SetCursorVisibility(bool visibility) { // ABSTRACTION
@@ -60,6 +62,16 @@ public class UIManager : MonoBehaviour {
 				StartCoroutine(HideTimer());
 			}
 		}
+
+		int currentPlacement = GameManager.Instance.CalculatePlacement();
+		string placementText = "";
+
+        if (currentPlacement == 1) placementText = "1st";
+		else if (currentPlacement == 2) placementText = "2nd";
+		else if (currentPlacement == 3) placementText = "3rd";
+		else placementText = currentPlacement.ToString() + "th";
+
+        _placementDisplay.text = placementText;
 	}
 
 	private IEnumerator HideTimer() { // ABSTRACTION
