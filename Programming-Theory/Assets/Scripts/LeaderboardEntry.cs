@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class LeaderboardEntry : MonoBehaviour
+public class LeaderboardEntry 
 {
     public string playerName;
     public GameManager.Cars carType;

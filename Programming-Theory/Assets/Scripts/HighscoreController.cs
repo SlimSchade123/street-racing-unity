@@ -48,8 +48,9 @@ public class HighscoreController : MonoBehaviour {
         }
 
 		var leaderboard = LeaderboardManager.Instance.GetLeaderboard();
+        Debug.Log("Leaderboard entries: " + leaderboard.Count);
 
-		for (int i = 0; i < leaderboard.Count; i++)
+        for (int i = 0; i < leaderboard.Count; i++)
 		{
 			GameObject row = Instantiate(leaderboardUI, leaderboardParent);
 			row.GetComponent<LeaderboardUI>().Setup(i + 1, leaderboard[i]);

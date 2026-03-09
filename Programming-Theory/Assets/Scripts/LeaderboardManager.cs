@@ -9,6 +9,12 @@ public class LeaderboardManager : MonoBehaviour
     [SerializeField] private int maxEntries = 10;
     public List<LeaderboardEntry> leaderboardEntries = new List<LeaderboardEntry>();
 
+
+    private void Start()
+    {
+        AddEntry("TEST PLAYER", GameManager.Cars.Convertible, System.TimeSpan.FromSeconds(75));
+    }
+
     private void Awake()
     {
         if (Instance != null)
