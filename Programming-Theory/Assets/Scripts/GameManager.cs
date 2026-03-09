@@ -92,6 +92,12 @@ public class GameManager : MonoBehaviour {
 		highscoreData = data;
 	}
 
+    //New Leaderboard system
+	public void SaveLeaderboardEntry(System.TimeSpan score)
+	{
+		string playerName = "Player";
+		LeaderboardManager.Instance.AddEntry(playerName, choosenCarType, score);
+    }
 	public int CalculatePlacement()
 	{
 		if(allCars == null || allCars.Length == 0) allCars = FindObjectsByType<CarController>(FindObjectsSortMode.None);
