@@ -44,6 +44,7 @@ public abstract class CarController : MonoBehaviour {
 	[SerializeField] private float _downForce = 100f;
 	[SerializeField] private SpeedUnit _speedUnit;
 	[SerializeField] private float _topSpeed = 140;
+	[SerializeField] public Transform _firstPersonCameraPosition;
 
 	protected float CurrentSpeed { // ENCAPSULATION
 		get {
@@ -59,6 +60,14 @@ public abstract class CarController : MonoBehaviour {
 	private TMP_Text _speedText;
 	private TMP_Text _speedUnitText;
 	private Transform _speedometerPointer;
+
+	//Speed boost variables
+	private bool _isSpeedBoost = false;
+	private float _speedBoostAmount = 1;
+
+	//Tracking placement
+	public int _checkpointsHit = 0;
+	public int _currentPlacement = 0;
 
 	protected void InitiateVehicle(Transform vehicle) { // ABSTRACTION
 		if (_centerOfMass != null && _rigidbody != null)
@@ -248,11 +257,79 @@ public abstract class CarController : MonoBehaviour {
 			if (speed > _topSpeed)
 				_rigidbody.linearVelocity = (_topSpeed / 3.6f) * _rigidbody.linearVelocity.normalized;
 		}
+
+		//Increases speed by speedBoostAmount if Speed Boost is currently active
+		if(_isSpeedBoost)
+		{
+            _rigidbody.linearVelocity *= _speedBoostAmount;
+
+        }
 	}
 
 	private void Awake() {
 		_speedText = GameObject.Find("Speed Text").GetComponent<TMP_Text>();
 		_speedUnitText = GameObject.Find("Speed Unit Text").GetComponent<TMP_Text>();
 		_speedometerPointer = GameObject.Find("Speedometer Pointer").transform;
+	}
+
+	//Boosts the speed of the car by a specified increase for a specified amount of time
+	public void BoostSpeedForTime(float increase, float duration)
+	{
+
+        _speedBoostAmount = increase;
+		_isSpeedBoost = true;
+
+		StartCoroutine(EndSpeedBoostAfterTime(duration));
+    }
+
+	//Starts a speed boost but does not end it
+	public void StartSpeedBoost(float increase)
+	{
+        _speedBoostAmount = increase;
+        _isSpeedBoost = true;
+    }
+
+	//Ends a speed boost
+	public void EndSpeedBoost()
+	{
+		_speedBoostAmount = 1;
+		_isSpeedBoost = false;
+	}
+
+    public void BoostHandling(float increase, float duration)
+	{
+		print("Boosting Handling");
+	}
+
+	//Ends speed boost after a specified amount of time
+	private IEnumerator EndSpeedBoostAfterTime(float time)
+	{
+		yield return new WaitForSeconds(time);
+
+		_speedBoostAmount = 0.5f;	//An attempt to make things a little easier to control
+
+		yield return new WaitForEndOfFrame();
+
+		_speedBoostAmount = 1;	//Return speed boost modifier to normal
+		_isSpeedBoost = false;	//Inform car it is no longer under the effects of a speed boost
+	}
+
+	//Registers when a car has passed through a new checkpoint
+	public void RegisterClearedCheckpoint()
+	{
+		_checkpointsHit++;
+	}
+
+	public void CalculatePlacement(CarController[] allCars)
+	{
+		int placementScore = 1;
+
+		foreach(CarController car in allCars)
+		{
+			if(car._checkpointsHit > this._checkpointsHit) placementScore++;
+		}
+
+
+		_currentPlacement = placementScore;
 	}
 }
