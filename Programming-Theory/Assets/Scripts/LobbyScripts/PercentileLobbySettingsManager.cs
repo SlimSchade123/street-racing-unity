@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class PercentileLobbySettingsManager : LobbySettingsManager
 {
-    public float changeRate;
     public bool isInteger;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

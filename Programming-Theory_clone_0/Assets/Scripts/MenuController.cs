@@ -1,10 +1,12 @@
+using PurrNet;
+using PurrNet.Modules;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
 public class MenuController : MonoBehaviour {
 	public Animator startAnimator;
 	public Animator arrowAnimator;
@@ -24,8 +26,13 @@ public class MenuController : MonoBehaviour {
 	public TMP_Text chosenText;
 
 	public float rotationSpeed = 60f;
+    private CursorSyncManager CursorSync =>
+    _cursorSyncManager ??= FindAnyObjectByType<CursorSyncManager>();
+    private CursorSyncManager _cursorSyncManager;
 
-	private void Start() {
+    public Button startButton;
+
+    private void Start() {
 		GameManager.IsGameStarted = false;
 		UIManager.SetCursorVisibility(true);
 
@@ -35,7 +42,11 @@ public class MenuController : MonoBehaviour {
 		_selectionsDic.Add(GameManager.Cars.SharkTruck, selection4);
 
 		ChooseSelection(GameManager.Cars.Convertible);
-	}
+        _cursorSyncManager = FindAnyObjectByType<CursorSyncManager>();
+
+        if (startButton != null)
+            startButton.interactable = false;
+    }
 
 	private void Update() {
 		if (Input.anyKeyDown) {
@@ -61,29 +72,51 @@ public class MenuController : MonoBehaviour {
 		}
 	}
 
-	public void ChooseSelection(GameManager.Cars cRef) { // ABSTRACTION
-		_chosenSelection = _selectionsDic[cRef];
+    public void ChooseSelection(GameManager.Cars cRef)
+    {
+        _chosenSelection = _selectionsDic[cRef];
+        MenuSelection menuSelection = _selectionsDic[cRef].GetComponent<MenuSelection>();
+        chosenText.text = menuSelection.car.name;
+        chosenText.color = menuSelection.difficultyColor;
+        GameManager.Instance.choosenCarType = cRef;
 
-		MenuSelection menuSelection = _selectionsDic[cRef].GetComponent<MenuSelection>();
-		chosenText.text = menuSelection.car.name;
-		chosenText.color = menuSelection.difficultyColor;
+        CursorSync?.LocalPlayerSelectedCar(cRef);
+    }
 
-		GameManager.Instance.choosenCarType = cRef;
-	}
+    public void HighlightSelection(GameManager.Cars cRef)
+    {
+        _highlightedSelection = _selectionsDic[cRef];
+        CursorSync?.OnCarHoverEnter(cRef); // Show blocked tint if taken
+    }
 
-	public void HighlightSelection(GameManager.Cars cRef) { // ABSTRACTION
-		_highlightedSelection = _selectionsDic[cRef];
-	}
+    public void RemoveHighlightedSelection(GameManager.Cars cRef)
+    {
+        _highlightedSelection = null;
+        CursorSync?.OnCarHoverExit(cRef); // Restore taken overlay
+    }
 
-	public void RemoveHighlightedSelection() { // ABSTRACTION
-		_highlightedSelection = null;
-	}
+    // Called by CursorSyncManager when all players have picked
+    public void SetStartButtonReady(bool ready)
+    {
+        if (startButton != null)
+            startButton.interactable = ready;
+    }
 
-	public void Play() { // ABSTRACTION
+    // Helper for CursorSyncManager to access selection objects
+    public GameObject GetSelectionObject(GameManager.Cars car)
+    {
+        return _selectionsDic.TryGetValue(car, out GameObject obj) ? obj : null;
+    }
+
+
+    public void Play() { // ABSTRACTION
 		if (GameManager.Instance == null)
 			return;
 
-		GameManager.IsGameOver = false;
+        // Only the server should trigger the scene load
+        if (!NetworkManager.main.isServer) return;
+
+        GameManager.IsGameOver = false;
 
 		StartCoroutine(ChangeScene());
 	}
@@ -91,7 +124,13 @@ public class MenuController : MonoBehaviour {
 	private IEnumerator ChangeScene() { // ABSTRACTION
 		fadeOutAnimator.SetTrigger("Fade");
 
-		yield return new WaitForSeconds(.75f);
-		SceneManager.LoadScene(1);
-	}
+        var settings = new PurrSceneSettings
+        {
+            isPublic = true,
+            mode = LoadSceneMode.Additive  // Doesn't require DontDestroyOnLoad
+        };
+
+        yield return new WaitForSeconds(.75f);
+        NetworkManager.main.sceneModule.LoadSceneAsync(1,settings);
+    }
 }

@@ -1,5 +1,6 @@
 using PurrNet;
 using PurrNet.Modules;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CarSpawner : NetworkIdentity
@@ -8,6 +9,11 @@ public class CarSpawner : NetworkIdentity
     [SerializeField] CarController Pickup;
     [SerializeField] CarController Jumpy;
     [SerializeField] CarController Shark;
+
+    [SerializeField] private Vector3 spawnOffset = new Vector3(5f, -2f, 0f);
+
+    private readonly Dictionary<PlayerID, int> _playerIndices = new();
+    private int _nextIndex = 0;
 
     protected override void OnSpawned(bool asServer)
     {
@@ -37,12 +43,19 @@ public class CarSpawner : NetworkIdentity
 
     private void SpawnCarForPlayer(PlayerID player, GameManager.Cars carChoice)
     {
+        if (!_playerIndices.ContainsKey(player))
+            _playerIndices[player] = _nextIndex++;
+
+        Vector3 spawnPos = transform.position + (spawnOffset * _playerIndices[player]);
+        Quaternion spawnRot = transform.rotation;
+
+        Debug.Log($"Spawning for {player} at index {_playerIndices[player]}, pos {spawnPos}");
         GameObject carObject = carChoice switch
         {
-            GameManager.Cars.Convertible => Instantiate(Convertible.gameObject, transform.position, transform.rotation),
-            GameManager.Cars.Pickup => Instantiate(Pickup.gameObject, transform.position, transform.rotation),
-            GameManager.Cars.Jumpy => Instantiate(Jumpy.gameObject, transform.position, transform.rotation),
-            GameManager.Cars.SharkTruck => Instantiate(Shark.gameObject, transform.position, transform.rotation),
+            GameManager.Cars.Convertible => Instantiate(Convertible.gameObject, spawnPos, spawnRot),
+            GameManager.Cars.Pickup => Instantiate(Pickup.gameObject, spawnPos, spawnRot),
+            GameManager.Cars.Jumpy => Instantiate(Jumpy.gameObject, spawnPos, spawnRot),
+            GameManager.Cars.SharkTruck => Instantiate(Shark.gameObject, spawnPos, spawnRot),
             _ => null
         };
 
@@ -50,6 +63,7 @@ public class CarSpawner : NetworkIdentity
         {
             var identity = carObject.GetComponent<NetworkIdentity>();
             identity.GiveOwnership(player);
+            networkManager.Spawn(carObject);
         }
     }
 }

@@ -90,7 +90,7 @@ public abstract class CarController : MonoBehaviour
             transform.position.y,
             playerSpawn.position.z
         );
-        transform.position = startPos;
+        //transform.position = startPos;
 
         GameManager.Instance.player = vehicle.gameObject;
     }

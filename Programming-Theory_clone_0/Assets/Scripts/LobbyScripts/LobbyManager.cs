@@ -17,6 +17,10 @@ public class LobbyManager : NetworkIdentity
     public GameObject LobbyPanel;
     public TMP_InputField PlayerNameField;
     private NetworkManager _networkManager;
+    public List<LobbySettingsManager> lobbySettingsManagers = new();
+    public GameObject ChooseCarScreen;
+    public Button StartGameButton;
+    public GameObject cursorSyncManagerPrefab;
 
     override protected void OnSpawned(bool asServer)
     {
@@ -34,8 +38,12 @@ public class LobbyManager : NetworkIdentity
         JoinButton.onClick.AddListener(() => JoinLobby());
         LobbyPanel = transform.parent.parent.parent.parent.parent.Find("Lobby").gameObject;
         ScrollViewContent = LobbyPanel.transform.Find("Scroll View/Viewport/Content").gameObject;
-        
+        ChooseCarScreen = LobbyPanel.transform.parent.Find("ChooseCarScreen").gameObject;
         PlayerNameField = JoinLobbyManager.instance.transform.Find("TopPanel/NameField").GetComponentInChildren<TMP_InputField>();
+        StartGameButton = LobbyPanel.transform.Find("TopPanel/StartButton").GetComponent<Button>();
+        StartGameButton.onClick.RemoveAllListeners();
+        StartGameButton.onClick.AddListener(OnStartGame);
+        cursorSyncManagerPrefab = Resources.Load<GameObject>("CursorSyncManager");
     }
 
     void Update()
@@ -112,7 +120,7 @@ public class LobbyManager : NetworkIdentity
             {
                 LobbyPanel.SetActive(true);
             }
-            gameObject.SetActive(false);
+            JoinLobbyManager.instance.gameObject.SetActive(false);
         }
 
         var allPlayers = FindObjectsByType<LobbyPlayer>(FindObjectsSortMode.None);
@@ -139,8 +147,19 @@ public class LobbyManager : NetworkIdentity
         Debug.Log($"Player {playerName} joined lobby {LobbyID}. Total players in content: {ScrollViewContent.transform.childCount}");
     }
 
-    public void PopulateLobby()
+    private void OnStartGame()
     {
-        
+        // Only the host should be able to start
+        if (!isServer) return;
+
+        StartGameObserversRpc();
     }
+
+    [ObserversRpc]
+    private void StartGameObserversRpc()
+    {
+        LobbyPanel.SetActive(false);
+        ChooseCarScreen.SetActive(true);
+    }
+
 }
