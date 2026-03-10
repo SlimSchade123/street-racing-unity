@@ -26,7 +26,7 @@ public class PlayerCamera : MonoBehaviour {
 	}
 
 	private void FixedUpdate() {
-		if (canFollow) {
+		if (canFollow && Target != null) {
 			Vector3 wantedPosition;
 			if (_followBehind)
 				wantedPosition = Target.TransformPoint(0, Height, -Distance);
