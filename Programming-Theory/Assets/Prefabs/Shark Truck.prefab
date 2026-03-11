@@ -1756,6 +1756,7 @@ GameObject:
   - component: {fileID: 6340014194926270712}
   - component: {fileID: 4045173036441965398}
   - component: {fileID: 4045173036441965399}
+  - component: {fileID: -1599336904412000835}
   m_Layer: 0
   m_Name: Shark Truck
   m_TagString: Untagged
@@ -1866,6 +1867,37 @@ MonoBehaviour:
   _lowerPart: {fileID: 6469052695835972827}
   _wheelColliders: {fileID: 857365575}
   _lowerPartRotation: 100
+--- !u!114 &-1599336904412000835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7036619920151759595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 817fe5016bd0a2a49a95b6eb338bb132, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PurrNet.Runtime::PurrNet.NetworkTransform
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  _syncPosition: 1
+  _syncRotation: 1
+  _syncScale: 1
+  _syncParent: 1
+  _interpolateSettings: 7
+  _minBufferSize: 1
+  _maxBufferSize: 2
+  _characterControllerPatch: 0
+  _ownerAuth: 1
+  _interpolationTiming: 0
 --- !u!1 &7133753599788070997
 GameObject:
   m_ObjectHideFlags: 0
