@@ -6,6 +6,7 @@ public class LapRing : MonoBehaviour {
 	public bool shouldSkip = false;
 	private LapsManager lapsManager;
 
+
 	private void Start() {
 		lapsManager = transform.parent.parent.GetComponent<LapsManager>();
 	}
@@ -13,5 +14,7 @@ public class LapRing : MonoBehaviour {
 	private void OnTriggerExit(Collider other) { // ABSTRACTION
 		if (lapsManager != null)
 			lapsManager.RemoveLastCheckpoint(gameObject);
+
+		other.gameObject.GetComponentInParent<CarController>().RegisterClearedCheckpoint();
 	}
 }
