@@ -6,8 +6,6 @@ public class MinimapFollowCar : MonoBehaviour {
 	public static Transform Car { get; set; } // ENCAPSULATION
 
 	private void LateUpdate() {
-		if (Car == null) return;
-
 		transform.position = new Vector3(Car.position.x, transform.position.y, Car.position.z);
 		transform.eulerAngles = new Vector3(transform.eulerAngles.x, Car.eulerAngles.y, transform.eulerAngles.z);
 	}

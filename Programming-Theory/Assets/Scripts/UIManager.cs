@@ -1,110 +1,82 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using PurrNet;
-using System.Collections.Generic;
+using System.Text;
 
-public class UIManager : NetworkIdentity
-{
-    public float timer = 3f;
-    private bool _canCount = false;
-    private TMP_Text _startCounter;
-    private GameObject _controls;
+public class UIManager : MonoBehaviour {
+	public float timer = 3f;
 
-    // Server-side ready tracking
-    private readonly HashSet<PlayerID> _readyPlayers = new();
+	private bool _canCount = false;
+	private TMP_Text _startCounter;
+	[SerializeField] private TMP_Text _placementDisplay;
+	private GameObject _controls;
 
-    public static void SetCursorVisibility(bool visibility)
-    {
-        Cursor.lockState = visibility ? CursorLockMode.None : CursorLockMode.Locked;
-        Cursor.visible = visibility;
-    }
+	public static void SetCursorVisibility(bool visibility) { // ABSTRACTION
+		if (visibility)
+			Cursor.lockState = CursorLockMode.None;
+		else
+			Cursor.lockState = CursorLockMode.Locked;
 
-    protected override void OnSpawned(bool asServer)
-    {
-        SetCursorVisibility(false);
-        _startCounter = GameObject.Find("Start Counter").GetComponent<TMP_Text>();
-        _startCounter.enabled = true;
-        _startCounter.gameObject.SetActive(false);
+		Cursor.visible = visibility;
+	}
 
-        StartCoroutine(ShowControlsThenReportReady());
-    }
+	private void Start() {
+		SetCursorVisibility(false);
 
-    private IEnumerator ShowControlsThenReportReady()
-    {
-        // Show the correct control formation for this player's car
-        if (GameManager.Instance.choosenCarType == GameManager.Cars.Convertible ||
-            GameManager.Instance.choosenCarType == GameManager.Cars.Pickup)
-        {
-            _controls = GameObject.Find("Formation 1");
-            GameObject.Find("Formation 2").SetActive(false);
-        }
-        else if (GameManager.Instance.choosenCarType == GameManager.Cars.Jumpy ||
-            GameManager.Instance.choosenCarType == GameManager.Cars.SharkTruck)
-        {
-            _controls = GameObject.Find("Formation 2");
-            GameObject.Find("Formation 1").SetActive(false);
-        }
+		_startCounter = GameObject.Find("Start Counter").GetComponent<TMP_Text>();
+		_startCounter.enabled = true;
+		_startCounter.gameObject.SetActive(false);
 
-        _controls.SetActive(true);
+		StartCoroutine(WaitForControlsToCount());
+	}
 
-        // Wait for controls screen, then tell server this client is ready
-        yield return new WaitForSeconds(7f);
+	private IEnumerator WaitForControlsToCount() { // ABSTRACTION
+		if (GameManager.Instance.choosenCarType == GameManager.Cars.Convertible ||
+			GameManager.Instance.choosenCarType == GameManager.Cars.Pickup) {
+			_controls = GameObject.Find("Formation 1");
+			GameObject.Find("Formation 2").SetActive(false);
+		}
+		else if (GameManager.Instance.choosenCarType == GameManager.Cars.Jumpy ||
+			GameManager.Instance.choosenCarType == GameManager.Cars.SharkTruck) {
+			_controls = GameObject.Find("Formation 2");
+			GameObject.Find("Formation 1").SetActive(false);
+		}
 
-        if (isServer)
-            PlayerReadyOnServer(localPlayer.Value);
-        else
-            ReportReadyServerRpc();
-    }
+		_controls.SetActive(true);
+		yield return new WaitForSeconds(7f);
+		_startCounter.gameObject.SetActive(true);
+		_canCount = true;
+	}
 
-    [ServerRpc(requireOwnership: false)]
-    private void ReportReadyServerRpc(RPCInfo info = default)
-    {
-        PlayerReadyOnServer(info.sender);
-    }
+	private void Update() {
+		if (_canCount) {
+			if (timer >= 0f)
+				timer -= Time.smoothDeltaTime;
 
-    private void PlayerReadyOnServer(PlayerID player)
-    {
-        _readyPlayers.Add(player);
+			_startCounter.text = Mathf.RoundToInt(timer % 60).ToString();
+			if (timer <= .5f) {
+				GameManager.IsGameStarted = true;
+				_startCounter.text = "GO!";
 
-        LobbyManager lobbyManager = FindAnyObjectByType<LobbyManager>();
-        int expectedPlayers = lobbyManager != null ? lobbyManager.lobbySettings.playerCount : 1;
+				StartCoroutine(HideTimer());
+			}
+		}
 
-        Debug.Log($"[UIManager] {_readyPlayers.Count}/{expectedPlayers} players ready.");
+		int currentPlacement = GameManager.Instance.CalculatePlacement();
+		string placementText = "";
 
-        if (_readyPlayers.Count >= expectedPlayers)
-            StartCountdownObserversRpc();
-    }
+        if (currentPlacement == 1) placementText = "1st";
+		else if (currentPlacement == 2) placementText = "2nd";
+		else if (currentPlacement == 3) placementText = "3rd";
+		else placementText = currentPlacement.ToString() + "th";
 
-    [ObserversRpc]
-    private void StartCountdownObserversRpc()
-    {
-        _startCounter.gameObject.SetActive(true);
-        _canCount = true;
-    }
+        _placementDisplay.text = placementText;
+	}
 
-    private void Update()
-    {
-        if (_canCount)
-        {
-            if (timer >= 0f)
-                timer -= Time.smoothDeltaTime;
-
-            _startCounter.text = Mathf.RoundToInt(timer % 60).ToString();
-
-            if (timer <= .5f)
-            {
-                GameManager.IsGameStarted = true;
-                _startCounter.text = "GO!";
-                StartCoroutine(HideTimer());
-            }
-        }
-    }
-
-    private IEnumerator HideTimer()
-    {
-        yield return new WaitForSeconds(2f);
-        _startCounter.gameObject.SetActive(false);
-        _canCount = false;
-    }
+	private IEnumerator HideTimer() { // ABSTRACTION
+		yield return new WaitForSeconds(2f);
+		_startCounter.gameObject.SetActive(false);
+		_canCount = false;
+	}
 }
