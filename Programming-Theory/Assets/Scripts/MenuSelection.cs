@@ -21,6 +21,6 @@ public class MenuSelection : MonoBehaviour, IPointerClickHandler, IPointerEnterH
 	}
 
 	public void OnPointerExit(PointerEventData eventData) {
-		menuController.RemoveHighlightedSelection();
+		menuController.RemoveHighlightedSelection(carRef);
 	}
 }

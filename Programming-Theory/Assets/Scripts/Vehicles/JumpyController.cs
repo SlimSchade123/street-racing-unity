@@ -1,47 +1,68 @@
+using PurrNet;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JumpyController : CarController { // INHERITANCE
-	[SerializeField] private float _jumpForce = 2000f;
+public class JumpyController : CarController
+{ // INHERITANCE
+    [SerializeField] private float _jumpForce = 2000f;
 
-	protected override void HandleMovementOnAir() { // POLYMORPHISM
-		RotateRigidbodyAroundAxis(-transform.forward, SteerAngle, _airRotation / 2f);
-		RotateRigidbodyAroundAxis(transform.right, MotorTorqueDirection, _airRotation);
-	}
+    protected override void HandleMovementOnAir()
+    { // POLYMORPHISM
+        RotateRigidbodyAroundAxis(-transform.forward, SteerAngle, _airRotation / 2f);
+        RotateRigidbodyAroundAxis(transform.right, MotorTorqueDirection, _airRotation);
+    }
 
-	private IEnumerator HandleJump() { // ABSTRACTION
-		_rigidbody.AddForce(
-			(transform.up + (transform.forward * MotorTorqueDirection)) * _jumpForce,
-			ForceMode.Impulse
-		);
+    private IEnumerator HandleJump()
+    { // ABSTRACTION
+        _rigidbody.AddForce(
+            (transform.up + (transform.forward * MotorTorqueDirection)) * _jumpForce,
+            ForceMode.Impulse
+        );
 
-		yield return null;
-	}
+        yield return null;
+    }
 
-	private void Start() {
-		if (GameManager.Instance.IsSelectedVehicle(carType) && !GameManager.IsGameOver) {
-			InitiateVehicle(transform);
-			OnEachWheel(UpdateMesh);
-		}
-	}
+    private NetworkIdentity _networkIdentity;
+    private bool _initialized = false;
 
-	private void Update() {
-		if (GameManager.Instance.IsSelectedVehicle(carType) && !GameManager.IsGameOver) {
-			ShowSpeed();
+    private void Start()
+    {
+        _networkIdentity = GetComponent<NetworkIdentity>();
+        TryInitialize();
+    }
 
-			if (Input.GetKeyDown(KeyCode.LeftShift) && AreWheelsOnGround)
-				StartCoroutine(HandleJump());
-		}
-	}
+    private void TryInitialize()
+    {
+        if (_initialized) return;
+        if (_networkIdentity == null || !_networkIdentity.isOwner) return;
+        if (GameManager.IsGameOver) return;
 
-	private void FixedUpdate() {
-		if (GameManager.Instance.IsSelectedVehicle(carType) && !GameManager.IsGameOver && GameManager.IsGameStarted) {
-			float motor = Input.GetAxis("Vertical");
-			float steering = Input.GetAxis("Horizontal");
-			bool handBrake = Input.GetButton("Jump");
+        _initialized = true;
+        InitiateVehicle(transform);
+        OnEachWheel(UpdateMesh);
+    }
 
-			Move(motor, steering, handBrake);
-		}
-	}
+    private void Update()
+    {
+        if (!_initialized)
+        {
+            TryInitialize();
+            return;
+        }
+        if (GameManager.Instance.IsSelectedVehicle(carType) && !GameManager.IsGameOver)
+            ShowSpeed();
+    }
+
+    private void FixedUpdate()
+    {
+        if (GameManager.Instance.IsSelectedVehicle(carType) && !GameManager.IsGameOver && GameManager.IsGameStarted)
+        {
+            float motor = Input.GetAxis("Vertical");
+            float steering = Input.GetAxis("Horizontal");
+            bool handBrake = Input.GetButton("Jump");
+
+            Move(motor, steering, handBrake);
+        }
+    }
 }
