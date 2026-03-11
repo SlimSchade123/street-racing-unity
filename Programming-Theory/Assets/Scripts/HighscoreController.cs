@@ -13,12 +13,8 @@ public class HighscoreController : MonoBehaviour {
 	[SerializeField] private TMP_Text jumpyScore;
 	[SerializeField] private TMP_Text sharkScore;
 	[SerializeField] private GameObject highscoreContents;
-	//Leaderboard related fields
-	[SerializeField] private Transform leaderboardParent;
-	[SerializeField] private GameObject leaderboardUI;
 
-
-    private bool _isGamePaused = false;
+	private bool _isGamePaused = false;
 
 	private void Awake() {
 		if (Instance != null) {
@@ -33,30 +29,9 @@ public class HighscoreController : MonoBehaviour {
 		GameManager.IsGameOver = true;
 		GameManager.Instance.SaveHighscore(time, GameManager.Instance.choosenCarType);
 
-		// Now show the leaderboard rather than just the HighScore
-		GameManager.Instance.SaveLeaderboardEntry(time);
-
 		UIManager.SetCursorVisibility(true);
 		ResolveScreen();
 	}
-
-	private void DisplayLeaderboard()
-	{
-		foreach (Transform child in leaderboardParent)
-		{
-			Destroy(child.gameObject);
-        }
-
-		var leaderboard = LeaderboardManager.Instance.GetLeaderboard();
-        Debug.Log("Leaderboard entries: " + leaderboard.Count);
-
-        for (int i = 0; i < leaderboard.Count; i++)
-		{
-			GameObject row = Instantiate(leaderboardUI, leaderboardParent);
-			row.GetComponent<LeaderboardUI>().Setup(i + 1, leaderboard[i]);
-        }
-
-    }
 
 	private void ResolveScreen() { // ABSTRACTION
 		_isGamePaused = !_isGamePaused;
@@ -66,9 +41,7 @@ public class HighscoreController : MonoBehaviour {
 			Time.timeScale = 0f;
 		else
 			Time.timeScale = 1f;
-
-		DisplayLeaderboard();
-    }
+	}
 
 	public void BackToMenu() { // ABSTRACTION
 		ResolveScreen();
