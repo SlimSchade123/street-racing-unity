@@ -12,7 +12,11 @@ public class LeaderboardManager : MonoBehaviour
 
     private void Start()
     {
+<<<<<<< Updated upstream
         AddEntry("TEST PLAYER", GameManager.Cars.Convertible, System.TimeSpan.FromSeconds(75));
+=======
+    
+>>>>>>> Stashed changes
     }
 
     private void Awake()

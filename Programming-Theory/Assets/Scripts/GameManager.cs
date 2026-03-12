@@ -36,7 +36,14 @@ public class GameManager : MonoBehaviour {
 		Instance = this;
 		DontDestroyOnLoad(gameObject);
 	}
+    //New Leaderboard system
+    public void SaveLeaderboardEntry(System.TimeSpan score)
+    {
+        string playerName = "Player";
+        LeaderboardManager.Instance.AddEntry(playerName, choosenCarType, score);
+    }
 
+<<<<<<< Updated upstream
     private void Start()
     {
 		allCars = FindObjectsByType<CarController>(FindObjectsSortMode.None);
@@ -46,6 +53,8 @@ public class GameManager : MonoBehaviour {
 		shark = FindFirstObjectByType<SharkController>();
     }
 
+=======
+>>>>>>> Stashed changes
 
     public bool IsSelectedVehicle(Cars cRef) { // ABSTRACTION
 		if (cRef == choosenCarType) return true;

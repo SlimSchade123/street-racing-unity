@@ -13,11 +13,17 @@ public class HighscoreController : MonoBehaviour {
 	[SerializeField] private TMP_Text jumpyScore;
 	[SerializeField] private TMP_Text sharkScore;
 	[SerializeField] private GameObject highscoreContents;
+<<<<<<< Updated upstream
 	//Leaderboard related fields
 	[SerializeField] private Transform leaderboardParent;
 	[SerializeField] private GameObject leaderboardUI;
 
 
+=======
+    [SerializeField] private Transform leaderboardParent;
+    [SerializeField] private GameObject leaderboardUI;
+
+>>>>>>> Stashed changes
     private bool _isGamePaused = false;
 
 	private void Awake() {
@@ -29,10 +35,12 @@ public class HighscoreController : MonoBehaviour {
 		Instance = this;
 	}
 
-	public void EndGame(System.TimeSpan time) { // ABSTRACTION
-		GameManager.IsGameOver = true;
-		GameManager.Instance.SaveHighscore(time, GameManager.Instance.choosenCarType);
+    public void EndGame(System.TimeSpan time)
+    { // ABSTRACTION
+        GameManager.IsGameOver = true;
+        GameManager.Instance.SaveHighscore(time, GameManager.Instance.choosenCarType);
 
+<<<<<<< Updated upstream
 		// Now show the leaderboard rather than just the HighScore
 		GameManager.Instance.SaveLeaderboardEntry(time);
 
@@ -69,8 +77,47 @@ public class HighscoreController : MonoBehaviour {
 
 		DisplayLeaderboard();
     }
+=======
+        // Now show the leaderboard rather than just the HighScore
+        GameManager.Instance.SaveLeaderboardEntry(time);
 
-	public void BackToMenu() { // ABSTRACTION
+        UIManager.SetCursorVisibility(true);
+        ResolveScreen();
+    }
+
+    private void DisplayLeaderboard()
+    {
+        foreach (Transform child in leaderboardParent)
+        {
+            Destroy(child.gameObject);
+        }
+>>>>>>> Stashed changes
+
+        var leaderboard = LeaderboardManager.Instance.GetLeaderboard();
+        Debug.Log("Leaderboard entries: " + leaderboard.Count);
+
+        for (int i = 0; i < leaderboard.Count; i++)
+        {
+            GameObject row = Instantiate(leaderboardUI, leaderboardParent);
+            row.GetComponent<LeaderboardUI>().Setup(i + 1, leaderboard[i]);
+        }
+
+    }
+
+    private void ResolveScreen()
+    { // ABSTRACTION
+        _isGamePaused = !_isGamePaused;
+        highscoreContents.SetActive(_isGamePaused);
+
+        if (_isGamePaused)
+            Time.timeScale = 0f;
+        else
+            Time.timeScale = 1f;
+
+        DisplayLeaderboard();
+    }
+
+    public void BackToMenu() { // ABSTRACTION
 		ResolveScreen();
 		SceneManager.LoadScene(0);
 	}
