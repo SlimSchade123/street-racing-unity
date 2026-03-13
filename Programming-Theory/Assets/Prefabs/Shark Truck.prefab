@@ -1584,37 +1584,6 @@ Transform:
   - {fileID: 1001449996641607799}
   m_Father: {fileID: 6340014194926270712}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4056317714328746706
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6073070362507843905}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6073070362507843905
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4056317714328746706}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
-  m_LocalPosition: {x: 0.85, y: 0.36, z: -4}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6340014194926270712}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5584428025115188518
 GameObject:
   m_ObjectHideFlags: 0
@@ -1807,7 +1776,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6073070362507843905}
   - {fileID: 2355576004373964286}
   - {fileID: 755998455}
   - {fileID: 857365576}
@@ -1855,7 +1823,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dcfe0a8d2864ca4c82df27c286ea97e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _firstPersonCameraPosition: {fileID: 6073070362507843905}
   carType: 3
   _rigidbody: {fileID: 4045173036441965398}
   _airRotation: 30

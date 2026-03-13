@@ -282,11 +282,7 @@ Transform:
   - {fileID: 2514047459806040507}
   - {fileID: 2514047459610163364}
   - {fileID: 408193813}
-<<<<<<< Updated upstream
   - {fileID: 8429361984427311145}
-=======
-  - {fileID: 3421031430498086149}
->>>>>>> Stashed changes
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!54 &2514047459879972465
@@ -328,7 +324,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9671ac5a529542b46ba49a871effc707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _firstPersonCameraPosition: {fileID: 3421031430498086149}
   carType: 0
   _rigidbody: {fileID: 2514047459879972465}
   _airRotation: 30
@@ -1835,37 +1830,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &7262025007837250887
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3421031430498086149}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3421031430498086149
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7262025007837250887}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 1.28, z: -3.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1694250235127847218}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7845553087296814932
 GameObject:
   m_ObjectHideFlags: 0

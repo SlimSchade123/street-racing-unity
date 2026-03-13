@@ -29,14 +29,8 @@ public abstract class CarController : MonoBehaviour {
  	[HideInInspector] public float SteerAngle { get; protected set; } // ENCAPSULATION
  	[HideInInspector] public bool IsHandBraking { get; protected set; } // ENCAPSULATION
 
-<<<<<<< Updated upstream
 	[HideInInspector] protected float MaxSteerAngle { get; set; } // ENCAPSULATION
 	[HideInInspector] protected bool AreWheelsOnGround { get; set; } // ENCAPSULATION
-=======
-    [HideInInspector] protected float MaxSteerAngle { get; set; } // ENCAPSULATION
-    [HideInInspector] protected bool AreWheelsOnGround { get; set; } // ENCAPSULATION
-    [SerializeField] public Transform _firstPersonCameraPosition;
->>>>>>> Stashed changes
 
 	public GameManager.Cars carType;
 
@@ -269,23 +263,6 @@ public abstract class CarController : MonoBehaviour {
 		{
             _rigidbody.linearVelocity *= _speedBoostAmount;
 
-<<<<<<< Updated upstream
-=======
-    //Speed boost variables
-    private bool _isSpeedBoost = false;
-    private float _speedBoostAmount = 1;
-
-    protected float CurrentSpeed
-    { // ENCAPSULATION
-        get
-        {
-            float speed = _rigidbody.linearVelocity.magnitude;
-            if (_speedUnit == SpeedUnit.Imperial)
-                speed *= 2.23693629f;
-            else
-                speed *= 3.6f;
-            return speed;
->>>>>>> Stashed changes
         }
 	}
 
@@ -305,80 +282,11 @@ public abstract class CarController : MonoBehaviour {
 		StartCoroutine(EndSpeedBoostAfterTime(duration));
     }
 
-<<<<<<< Updated upstream
 	//Starts a speed boost but does not end it
 	public void StartSpeedBoost(float increase)
 	{
         _speedBoostAmount = increase;
         _isSpeedBoost = true;
-=======
-    private TMP_Text _speedText;
-    private TMP_Text _speedUnitText;
-    private Transform _speedometerPointer;
-
-    //Ends a speed boost
-    public void EndSpeedBoost()
-    {
-        _speedBoostAmount = 1;
-        _isSpeedBoost = false;
-    }
-    //Ends speed boost after a specified amount of time
-    private IEnumerator EndSpeedBoostAfterTime(float time)
-    {
-        yield return new WaitForSeconds(time);
-
-        _speedBoostAmount = 0.5f;    //An attempt to make things a little easier to control
-
-        yield return new WaitForEndOfFrame();
-
-        _speedBoostAmount = 1;    //Return speed boost modifier to normal
-        _isSpeedBoost = false;    //Inform car it is no longer under the effects of a speed boost
-    }
-    //Boosts the speed of the car by a specified increase for a specified amount of time
-    public void BoostSpeedForTime(float increase, float duration)
-    {
-
-        _speedBoostAmount = increase;
-        _isSpeedBoost = true;
-
-        StartCoroutine(EndSpeedBoostAfterTime(duration));
-    }
-
-    //Starts a speed boost but does not end it
-    public void StartSpeedBoost(float increase)
-    {
-        _speedBoostAmount = increase;
-        _isSpeedBoost = true;
-    }
-
-    protected void InitiateVehicle(Transform vehicle)
-    { // ABSTRACTION
-        if (_centerOfMass != null && _rigidbody != null)
-            _rigidbody.centerOfMass = _centerOfMass.localPosition;
-
-        var networkIdentity = vehicle.GetComponent<NetworkIdentity>();
-
-        if (networkIdentity != null && networkIdentity.isOwner)
-        {
-            MinimapFollowCar.Car = vehicle;
-            PlayerCamera.ChangeCamPrefs(vehicle, _camPrefs.distance, _camPrefs.height);
-        }
-        
-
-        Physics.IgnoreLayerCollision(6, 7, true);
-
-        MaxSteerAngle = _maxSteerAngle;
-
-        Transform playerSpawn = GameObject.Find("Player Spawn").transform;
-        Vector3 startPos = new Vector3(
-            playerSpawn.position.x,
-            transform.position.y,
-            playerSpawn.position.z
-        );
-        //transform.position = startPos;
-
-        GameManager.Instance.player = vehicle.gameObject;
->>>>>>> Stashed changes
     }
 
 	//Ends a speed boost
@@ -422,171 +330,6 @@ public abstract class CarController : MonoBehaviour {
 		}
 
 
-<<<<<<< Updated upstream
 		_currentPlacement = placementScore;
 	}
 }
-=======
-        HandleSpeed();
-    }
-
-    private bool AreAnyWheelsOnGround()
-    { // ABSTRACTION
-        int onAirCount = 0;
-
-        for (int i = 0; i < _wheels.Length; ++i)
-        {
-            if (_wheels[i].mesh == null || _wheels[i].collider == null)
-                break;
-
-            HandleWheelOnGround(_wheels[i], ref onAirCount);
-        }
-
-        AreWheelsOnGround = !(onAirCount == 4);
-        return !(onAirCount == 4);
-    }
-
-    private void HandleWheelOnGround(Wheel wheel, ref int wheelsOnAirCounter)
-    { // ABSTRACTION
-        if (wheel.collider.GetGroundHit(out WheelHit hit))
-        {
-            Material groundMaterial = hit.collider.GetComponent<Renderer>().material;
-            if (groundMaterial != null)
-            {
-                wheel.collider.forwardFriction = HandleFriction(groundMaterial.name,
-                    wheel.collider.forwardFriction,
-                    wheel.defaultForwardStiffness,
-                    4f
-                );
-
-                wheel.collider.sidewaysFriction = HandleFriction(groundMaterial.name,
-                    wheel.collider.sidewaysFriction,
-                    wheel.defaultSidewaysStiffness,
-                    2f
-                );
-            }
-
-            if (IsHandBraking || hit.sidewaysSlip > .4f)
-            {
-                wheel.skidmark.emitting = true;
-                if (_tireSmoke.isStopped || CurrentSpeed > 0) _tireSmoke.Play();
-            }
-            else
-            {
-                wheel.skidmark.emitting = false;
-                if (_tireSmoke.isPlaying) _tireSmoke.Stop();
-            }
-        }
-        else
-        {
-            wheel.skidmark.emitting = false;
-            if (_tireSmoke.isPlaying) _tireSmoke.Stop();
-
-            wheelsOnAirCounter++;
-        }
-    }
-
-    private WheelFrictionCurve HandleFriction(string groundMaterialName, WheelFrictionCurve frictionCurve,
-    float defaultStiffness, float divisor)
-    { // ABSTRACTION
-        if (groundMaterialName.Contains("Grass"))
-            frictionCurve.stiffness = defaultStiffness / divisor;
-        else if (groundMaterialName.Contains("Road"))
-            frictionCurve.stiffness = defaultStiffness;
-
-        return frictionCurve;
-    }
-
-    protected virtual void HandleMovementOnAir()
-    { // ABSTRACTION
-        RotateRigidbodyAroundAxis(transform.up, SteerAngle, _airRotation / 3f);
-        RotateRigidbodyAroundAxis(transform.right, MotorTorqueDirection, _airRotation);
-    }
-
-    protected void RotateRigidbodyAroundAxis(Vector3 axis, float input, float increaser)
-    { // ABSTRACTION
-        _rigidbody.transform.RotateAround(
-            _centerOfMass.position,
-            axis,
-            increaser * Mathf.Clamp(input, -1f, 1f) * Time.deltaTime);
-    }
-
-    private void HandleMovementOnGround(Wheel wheel)
-    { // ABSTRACTION
-        if (CheckWheelType(wheel, "front"))
-            wheel.collider.steerAngle = SteerAngle;
-
-        if (!IsHandBraking)
-        {
-            wheel.collider.brakeTorque = 0f;
-
-            if (MotorTorqueDirection > 0f) // Accelerating
-                wheel.collider.motorTorque = MotorTorqueDirection * _maxTorque / 4f;
-            else if (MotorTorqueDirection < 0f) // Deccelerating
-                wheel.collider.motorTorque = MotorTorqueDirection * _maxBrakeTorque / 40f;
-            else
-            {
-                if (CheckWheelType(wheel, "rear"))
-                    wheel.collider.brakeTorque = _maxBrakeTorque * 1000f;
-            }
-        }
-        else
-        {
-            wheel.collider.motorTorque = 0f;
-
-            if (CheckWheelType(wheel, "rear"))
-                wheel.collider.brakeTorque = _maxBrakeTorque * 10000f;
-        }
-
-        UpdateMesh(wheel);
-        StickToGround(wheel);
-    }
-
-    private bool CheckWheelType(Wheel wheel, string type)
-    { // ABSTRACTION
-        if (type == "front")
-            return (wheel.wheelType == WheelType.FrontLeft || wheel.wheelType == WheelType.FrontRight);
-        else if (type == "rear")
-            return (wheel.wheelType == WheelType.RearLeft || wheel.wheelType == WheelType.RearRight);
-        else
-            return false;
-    }
-
-    private void StickToGround(Wheel wheel)
-    { // ABSTRACTION
-        wheel.collider.attachedRigidbody.AddForce(
-            -transform.up * _downForce * wheel.collider.attachedRigidbody.linearVelocity.magnitude
-        );
-    }
-
-    private void HandleSpeed()
-    { // ABSTRACTION
-        float speed = _rigidbody.linearVelocity.magnitude;
-        if (_speedUnit == SpeedUnit.Imperial)
-        {
-            if (speed > _topSpeed)
-                _rigidbody.linearVelocity = (_topSpeed / 2.23693629f) * _rigidbody.linearVelocity.normalized;
-        }
-        else
-        {
-            speed *= 3.6f;
-            if (speed > _topSpeed)
-                _rigidbody.linearVelocity = (_topSpeed / 3.6f) * _rigidbody.linearVelocity.normalized;
-        }
-
-        //Increases speed by speedBoostAmount if Speed Boost is currently active
-        if (_isSpeedBoost)
-        {
-            _rigidbody.linearVelocity *= _speedBoostAmount;
-
-        }
-    }
-
-    private void Awake()
-    {
-        _speedText = GameObject.Find("Speed Text").GetComponent<TMP_Text>();
-        _speedUnitText = GameObject.Find("Speed Unit Text").GetComponent<TMP_Text>();
-        _speedometerPointer = GameObject.Find("Speedometer Pointer").transform;
-    }
-}
->>>>>>> Stashed changes

@@ -47,11 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdf000c4c60582f4b88cdadd4ced3b6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoostPad
-<<<<<<< Updated upstream
   speedBoostModifier: 1
-=======
-  speedBoostModifier: 0.9
->>>>>>> Stashed changes
 --- !u!33 &8225328592655574141
 MeshFilter:
   m_ObjectHideFlags: 0
